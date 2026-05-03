@@ -267,13 +267,12 @@
     </div>
   </div>
   <div>
-    <label>Deposits</label>
+    <label>Monthly Withdrawal</label>
     <div class="duo">
-      <input type="number" id="depAmt" value="0" min="0" step="50" inputmode="decimal">
-      <select id="depFreq">
-        <option value="none">none</option>
-        <option value="daily">daily</option>
-        <option value="monthly">monthly</option>
+      <input type="number" id="wdAmt" value="0" min="0" step="100" inputmode="decimal" placeholder="0">
+      <select id="wdFreq">
+        <option value="no">No</option>
+        <option value="yes">Yes — after 180 days</option>
       </select>
     </div>
   </div>
@@ -302,7 +301,7 @@
     <div class="stat-value success" id="interestEarned">—</div>
   </div>
   <div class="stat">
-    <div class="stat-label">Seed recouped</div>
+    <div class="stat-label">Cash withdrawn</div>
     <div class="stat-value" id="cashOut">—</div>
   </div>
   <div class="stat">
@@ -352,7 +351,7 @@
   const els = {
     currency: $('currency'), principal: $('principal'), dailyRate: $('dailyRate'),
     reinvest: $('reinvest'), durValue: $('durValue'), durUnit: $('durUnit'),
-    depAmt: $('depAmt'), depFreq: $('depFreq'),
+    wdAmt: $('wdAmt'), wdFreq: $('wdFreq'),
     recoupSeed: $('recoupSeed'),
     calcBtn: $('calcBtn'),
     finalBalance: $('finalBalance'), totalContributed: $('totalContributed'),
@@ -379,8 +378,8 @@
     const reinvestPct = Math.max(0, Math.min(100, parseFloat(els.reinvest.value) || 0)) / 100;
     const durVal = Math.max(1, parseInt(els.durValue.value) || 1);
     const durUnit = els.durUnit.value;
-    const depAmt = parseFloat(els.depAmt.value) || 0;
-    const depFreq = els.depFreq.value;
+    const wdAmt = parseFloat(els.wdAmt.value) || 0;
+    const monthlyWdActive = els.wdFreq.value === 'yes';
     const recoupSeed = els.recoupSeed.value === 'yes';
     let seedRecouped = false;
 
@@ -432,8 +431,7 @@
       bucketInterest += reinv;
       bucketCashOut += cashOut;
 
-      if (depFreq === 'daily') { bal += depAmt; totalDeposits += depAmt; }
-
+      // Recoup seed money on day 100
       if (recoupSeed && !seedRecouped && d === 100) {
         const recoupAmt = Math.min(P, bal);
         bal -= recoupAmt;
@@ -442,8 +440,12 @@
         seedRecouped = true;
       }
 
-      if (!useDailyBuckets && bucketIdx < boundaries.length && d === boundaries[bucketIdx]) {
-        if (depFreq === 'monthly') { bal += depAmt; totalDeposits += depAmt; }
+      // Monthly withdrawal: starting day 185, every 30 days after
+      if (monthlyWdActive && d >= 185 && (d - 185) % 30 === 0 && wdAmt > 0 && bal > 0) {
+        const actualWd = Math.min(wdAmt, bal);
+        bal -= actualWd;
+        totalCashOut += actualWd;
+        bucketCashOut += actualWd;
       }
 
       if (bucketIdx < boundaries.length && d === boundaries[bucketIdx]) {
