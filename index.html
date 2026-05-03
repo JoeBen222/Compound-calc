@@ -440,12 +440,14 @@
         seedRecouped = true;
       }
 
-      // Monthly withdrawal: starting day 185, every 30 days after
-      if (monthlyWdActive && d >= 185 && (d - 185) % 30 === 0 && wdAmt > 0 && bal > 0) {
+      // Monthly withdrawal: at the end of each displayed month, once we've passed day 180
+      if (monthlyWdActive && d > 180 && wdAmt > 0 && bal > 0 &&
+          bucketIdx < boundaries.length && d === boundaries[bucketIdx]) {
         const actualWd = Math.min(wdAmt, bal);
         bal -= actualWd;
         totalCashOut += actualWd;
         bucketCashOut += actualWd;
+      }
       }
 
       if (bucketIdx < boundaries.length && d === boundaries[bucketIdx]) {
