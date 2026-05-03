@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Daily Compound">
+<meta name="apple-mobile-web-app-title" content="MoneyMint">
 <meta name="theme-color" content="#1a1a1a">
-<title>Daily Compound Calculator</title>
-<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='40' fill='%23185FA5'/><text x='90' y='118' font-family='-apple-system,sans-serif' font-size='90' font-weight='600' fill='white' text-anchor='middle'>%24</text></svg>">
+<title>MoneyMint 🌱</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='40' fill='%23E8B923'/><text x='90' y='128' font-size='100' text-anchor='middle'>🌱</text></svg>">
 <style>
   :root {
     --bg: #ffffff;
@@ -52,9 +52,17 @@
     margin: 0 auto;
   }
   h1 {
-    font-size: 22px;
-    font-weight: 600;
+    font-size: 26px;
+    font-weight: 700;
     margin: 0 0 4px;
+    color: #E8B923;
+    letter-spacing: 0.3px;
+  }
+  .byline {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 0;
   }
   .subtitle {
     color: var(--text-secondary);
@@ -219,8 +227,8 @@
 </head>
 <body>
 
-<h1>Daily compound calculator</h1>
-<div class="subtitle">Daily compounding with reinvest rate, deposits & withdrawals</div>
+<h1>MoneyMint 🌱 <span class="byline">by YB</span></h1>
+<div class="subtitle">Daily compounding with reinvest rate, deposits & withdrawals calculator</div>
 
 <div class="grid">
   <div>
@@ -426,7 +434,6 @@
 
       if (depFreq === 'daily') { bal += depAmt; totalDeposits += depAmt; }
 
-      // Recoup seed money: pull out the original principal once, on day 90
       if (recoupSeed && !seedRecouped && d === 90) {
         const recoupAmt = Math.min(P, bal);
         bal -= recoupAmt;
@@ -521,7 +528,6 @@
     });
   });
 
-  // Run once on load so the 24-month breakdown shows by default
   calc();
 })();
 </script>
