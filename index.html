@@ -434,7 +434,7 @@
 
       if (depFreq === 'daily') { bal += depAmt; totalDeposits += depAmt; }
 
-      if (recoupSeed && !seedRecouped && d === 90) {
+      if (recoupSeed && !seedRecouped && d === 100) {
         const recoupAmt = Math.min(P, bal);
         bal -= recoupAmt;
         totalCashOut += recoupAmt;
