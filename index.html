@@ -440,9 +440,10 @@
         seedRecouped = true;
       }
 
-      // Monthly withdrawal: at the end of each displayed month, once we've passed day 180
-      if (monthlyWdActive && d > 180 && wdAmt > 0 && bal > 0 &&
-          bucketIdx < boundaries.length && d === boundaries[bucketIdx]) {
+      // Monthly withdrawal: at end of each month, starting with the first month-end on/after day 185
+      if (monthlyWdActive && wdAmt > 0 && bal > 0 &&
+          bucketIdx < boundaries.length && d === boundaries[bucketIdx] &&
+          boundaries[bucketIdx] >= 185) {
         const actualWd = Math.min(wdAmt, bal);
         bal -= actualWd;
         totalCashOut += actualWd;
