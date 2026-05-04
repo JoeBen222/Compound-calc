@@ -252,21 +252,6 @@
 
 <div class="grid">
   <div>
-    <label>Daily reinvest rate (%)</label>
-    <input type="number" id="reinvest" value="100" min="0" max="100" step="1" inputmode="decimal">
-  </div>
-  <div>
-    <label>Duration</label>
-    <div class="duo">
-      <input type="number" id="durValue" value="12" min="1" step="1" inputmode="numeric">
-      <select id="durUnit">
-        <option value="days">days</option>
-        <option value="months" selected>months</option>
-        <option value="years">years</option>
-      </select>
-    </div>
-  </div>
-  <div>
     <label>Recoup seed money</label>
     <select id="recoupSeed">
       <option value="no">No</option>
@@ -350,7 +335,6 @@
   const $ = (id) => document.getElementById(id);
   const els = {
     currency: $('currency'), principal: $('principal'), dailyRate: $('dailyRate'),
-    reinvest: $('reinvest'), durValue: $('durValue'), durUnit: $('durUnit'),
     wdAmt: $('wdAmt'), wdFreq: $('wdFreq'),
     recoupSeed: $('recoupSeed'),
     calcBtn: $('calcBtn'),
@@ -375,18 +359,15 @@
     const sym = els.currency.value;
     const P = parseFloat(els.principal.value) || 0;
     const dailyRate = (parseFloat(els.dailyRate.value) || 0) / 100;
-    const reinvestPct = Math.max(0, Math.min(100, parseFloat(els.reinvest.value) || 0)) / 100;
-    const durVal = Math.max(1, parseInt(els.durValue.value) || 1);
-    const durUnit = els.durUnit.value;
+    const reinvestPct = 1.0; // hardcoded to 100%
+    const durVal = 12;       // hardcoded to 12 months
+    const durUnit = 'months';
     const wdAmt = parseFloat(els.wdAmt.value) || 0;
     const monthlyWdActive = els.wdFreq.value === 'yes';
     const recoupSeed = els.recoupSeed.value === 'yes';
     let seedRecouped = false;
 
-    let totalDays;
-    if (durUnit === 'days') totalDays = durVal;
-    else if (durUnit === 'months') totalDays = Math.round(durVal * 365 / 12);
-    else totalDays = durVal * 365;
+    const totalDays = Math.round(durVal * 365 / 12);
 
     const apy = (Math.pow(1 + dailyRate, 365) - 1) * 100;
     els.apyOut.textContent = apy.toFixed(2) + '%';
@@ -397,18 +378,11 @@
     let totalReinvested = 0;
     let totalCashOut = 0;
 
-    const useDailyBuckets = durUnit === 'days' && totalDays <= 60;
-    const numMonths = durUnit === 'months' ? durVal
-      : durUnit === 'years' ? durVal * 12
-      : Math.max(1, Math.ceil(totalDays / (365/12)));
+    const numMonths = durVal;
 
     const boundaries = [];
-    if (useDailyBuckets) {
-      for (let i = 1; i <= totalDays; i++) boundaries.push(i);
-    } else {
-      for (let m = 1; m <= numMonths; m++) {
-        boundaries.push(Math.round(m * (totalDays / numMonths)));
-      }
+    for (let m = 1; m <= numMonths; m++) {
+      boundaries.push(Math.round(m * (totalDays / numMonths)));
     }
 
     const labels = ['Start'];
@@ -452,13 +426,13 @@
 
       if (bucketIdx < boundaries.length && d === boundaries[bucketIdx]) {
         const idx = bucketIdx + 1;
-        const label = useDailyBuckets ? ('D' + idx) : ('M' + idx);
+        const label = 'M' + idx;
         labels.push(label);
         balances.push(Math.round(bal * 100) / 100);
         reinvSeries.push(Math.round(totalReinvested * 100) / 100);
         depSeries.push(Math.round((P + totalDeposits) * 100) / 100);
         rows.push({
-          label: useDailyBuckets ? ('Day ' + idx) : ('Month ' + idx),
+          label: 'Month ' + idx,
           dayNum: d,
           bal,
           interest: bucketInterest,
